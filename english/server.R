@@ -2,7 +2,7 @@
 ##### THIS APPLICATION IS FOR EDUCATIONAL PURPOSES AND CAN BE USED TO #####
 ##### PRACTICE COMPUTING THE STATISTICAL POWER USING A Z-TEST         #####
 ##### Author: Robbie C.M. van Aert                                    #####
-##### License: MIT License (Expat)
+##### License: MIT License (Expat)                                    #####
 ###########################################################################
 
 server <- function(input, output) 
@@ -65,20 +65,20 @@ server <- function(input, output)
     ### Store some objects that will be just later on for generating the excercise
     if (direc == "\\neq")
     {
-      text_direc <- "tweezijdige"
-      tail <- "two-tailed test"
+      text_direc <- "two-sided"
+      tail <- "Proportion in Two Tails Combined"
       nota4 <- ifelse(mu_h1 > mu_h0, "\\(P(Z \\geq Z_{H_1} | H_1)\\)", 
                       "\\(P(Z \\leq Z_{H_1} | H_1)\\)")
       nota4_eq <- ifelse(mu_h1 > mu_h0, "P(Z \\geq Z_{H_1} | H_1)", 
                          "P(Z \\leq Z_{H_1} | H_1)")
-      two_direc <- ifelse(mu_h1 > mu_h0, "rechterstaart", "linkerstaart")
+      two_direc <- ifelse(mu_h1 > mu_h0, "right tail", "left tail")
       
       power <- ifelse(mu_h1 > mu_h0, pnorm(zh1, lower.tail = FALSE), pnorm(zh1))
       
     } else if (direc == "<")
     {
-      text_direc <- "linkseenzijdige"
-      tail <- "one-tailed test"
+      text_direc <- "left-tailed"
+      tail <- "Proportion in One Tail"
       nota4 <- "\\(P(Z \\leq Z_{H_1} | H_1)\\)"
       nota4_eq <- "P(Z \\leq Z_{H_1} | H_1)"
       two_direc <- "one"
@@ -86,8 +86,8 @@ server <- function(input, output)
       power <- pnorm(zh1)
     } else if (direc == ">")
     {
-      text_direc <- "rechtseenzijdige"
-      tail <- "one-tailed test"
+      text_direc <- "right-tailed"
+      tail <- "Proportion in One Tail"
       nota4 <- "\\(P(Z \\geq Z_{H_1} | H_1)\\)"
       nota4_eq <- "P(Z \\geq Z_{H_1} | H_1)"
       two_direc <- "one"
@@ -104,28 +104,28 @@ server <- function(input, output)
     output$ex <- renderUI({
       list(structure(list(name = "li", attribs = structure(list(), .Names = character(0)),
                           children = list(c(item = withMathJax(
-                            paste0("Hypotheses ", h0, " en ", h1))))),
+                            paste0("Hypotheses ", h0, " and ", h1))))),
                      class = "shiny.tag"),
            
            structure(list(name = "li", attribs = structure(list(), .Names = character(0)),
                           children = list(c(item = withMathJax(
-                            paste0("Verwacht steekproefgemiddelde \\(\\mu_{H_1}\\) = ",
+                            paste0("Expected sample mean \\(\\mu_{H_1}\\) = ",
                                    mu_h1))))),
                      class = "shiny.tag"),
            
            structure(list(name = "li", attribs = structure(list(), .Names = character(0)),
                           children = list(c(item = withMathJax(
-                            paste0("Standaarddeviatie in de populatie \\(\\sigma\\) = ",
+                            paste0("Standard deviation in the population \\(\\sigma\\) = ",
                                    sigma))))),
                      class = "shiny.tag"),
            
            structure(list(name = "li", attribs = structure(list(), .Names = character(0)),
                           children = list(c(item = withMathJax(
-                            paste0("Steekproefgrootte \\(\\textit{N}\\) = ", N))))),
+                            paste0("Sample size \\(\\textit{N}\\) = ", N))))),
                      class = "shiny.tag"),
            
            structure(list(name = "li", attribs = structure(list(), .Names = character(0)),
-                          children = list(c(item = "Significantieniveau van hypothesetoets "),
+                          children = list(c(item = "Significance level of the hypothesis test"),
                                           withMathJax("\\(\\alpha\\) = "), c(num = alpha))),
                      class = "shiny.tag"))
       
@@ -136,15 +136,15 @@ server <- function(input, output)
     {
       output$ques <- renderUI({
         
-        helpText("Wat is het onderscheidend vermogen/power van deze hypothesetoets?")
+        helpText("What is the statistical power of this hypothesis test?")
         
       })
     } else if (direc == "\\neq")
     {
       output$ques <- renderUI({
         
-        helpText("Wat is het onderscheidend vermogen/power van deze hypothesetoets 
-                 voor het vinden van een effect in de juiste richting?")
+        helpText("What is the statistical power of this hypothesis test to find 
+                 an effect in the correct direction?")
         
       })
     }
@@ -166,16 +166,18 @@ server <- function(input, output)
       {
         output$sol1 <- renderUI({
           withMathJax(
-            helpText(paste0("\\(\\textbf{Stap 1: Bepaal de $Z_{cv}$ onder $H_0$ (bij
-                        gegeven $\\alpha$ en richting van de toets)}\\)")),
-            helpText(paste0("Er is een ", text_direc, " toets uitgevoerd met
-                        \\(\\alpha\\) = ", alpha, ", dus \\(\\textit{$Z_{cv}$}\\)
-                         = ", zcv, ". Deze \\(\\textit{$Z_{cv}$}\\)
-                        kunnen we vinden in Tabel C.3 als we kijken bij het
-                        \\(\\textit{$\\infty$}\\)-teken in combinatie met '", tail,
-                            "' en \\(\\alpha\\) = ", alpha, ". Hieronder wordt dit
-                        weergegeven in een figuur o.b.v. \\(\\textit{Z}\\)-scores 
-                        waarbij het oranje gebied het verwerpingsgebied is.")))
+            helpText(paste0("\\(\\textbf{Step 1: Determine the $Z_{cv}$ for the 
+                            given $H_0$ (and the assumed $\\alpha$ and direction 
+                            of the test)}\\)")),
+            helpText(paste0("A ", text_direc, " test has been carried out with 
+            \\(\\alpha\\) = ", alpha, ", so \\(\\textit{$Z_{cv}$}\\)
+                         = ", zcv, ". We find this \\(\\textit{$Z_{cv}$}\\) in 
+                            Table B.2, if we look at the \\(\\textit{$\\infty$}\\)-sign 
+                            in combination with '", tail,
+                            "' and \\(\\alpha\\) = ", alpha, ". This is illustrated 
+                            in the figure below that displays \\(\\textit{Z}\\)-scores 
+                            where the orange area is the area where \\(\\textit{$H_0$}\\) 
+                            gets rejected.")))
           
         })
         
@@ -183,19 +185,22 @@ server <- function(input, output)
       {
         output$sol1 <- renderUI({
           withMathJax(
-            helpText(paste0("\\(\\textbf{Stap 1: Bepaal de $Z_{cv}$ onder $H_0$ (bij
-                        gegeven $\\alpha$ en richting van de toets)}\\)")),
-            helpText(paste0("Er is een ", text_direc, " toets uitgevoerd met
-                        \\(\\alpha\\) = ", alpha, ", dus \\(\\textit{$Z_{cv}$}\\)
-                         = ", zcv, ". Deze \\(\\textit{$Z_{cv}$}\\)
-                        kunnen we vinden in Tabel C.3 als we kijken bij het
-                        \\(\\textit{$\\infty$}\\)-teken in combinatie met '", tail,
-                            "' en \\(\\alpha\\) = ", alpha, ". Hieronder wordt dit
-                        weergegeven in een figuur o.b.v. \\(\\textit{Z}\\)-scores 
-                        waarbij het oranje gebied het verwerpingsgebied is. Dit 
-                            verwerpingsgebied ligt in de ", two_direc, " van de 
-                            verdeling, want dit is de juiste richting volgens de 
-                            \\(\\textit{$\\mu_{H_1}$}\\).")))
+            helpText(paste0("\\(\\textbf{Step 1: Determine the $Z_{cv}$ for the 
+                            given $H_0$ (and the assumed $\\alpha$ and direction 
+                            of the test)}\\)")),
+            
+            helpText(paste0("A ", text_direc, " test has been carried out with 
+                        \\(\\alpha\\) = ", alpha, ", so \\(\\textit{$Z_{cv}$}\\)
+                         = ", zcv, ". We find this \\(\\textit{$Z_{cv}$}\\)
+                        in Table B.2, if we look at the \\(\\textit{$\\infty$}\\)-sign 
+                            in combination with '", tail,
+                            "' and \\(\\alpha\\) = ", alpha, ". This is 
+                            illustrated in the figure below that displays 
+                            \\(\\textit{Z}\\)-scores where the orange area is 
+                            the area where \\(\\textit{$H_0$}\\) gets rejected. 
+                            This rejection area lies in the ", two_direc, " of 
+                            the distribution, because this is the expected 
+                            direction according to the \\(\\textit{$\\mu_{H_1}$}\\).")))
           
         })
       }
@@ -208,7 +213,7 @@ server <- function(input, output)
         plot(x, dnorm(x), type = "l", yaxt = "n", bty = "n", ylab = "",
              cex.axis = 1.5, cex.lab  = 1.5, xlab = "", xaxt = "n")
         
-        if (text_direc == "linkseenzijdige" | two_direc == "linkerstaart")
+        if (text_direc == "left-tailed" | two_direc == "left tail")
         {
           x <- seq(-5, -abs(zcv), length = 100)
           dvals <- dnorm(x)
@@ -216,7 +221,7 @@ server <- function(input, output)
           
           mtext(expression(italic(Z)[cv]), side = 1, at = -abs(zcv),
                 line = 1, cex = 1.5)
-        } else if (text_direc == "rechtseenzijdige" | two_direc == "rechterstaart")
+        } else if (text_direc == "right-tailed" | two_direc == "right tail")
         {
           x <- seq(abs(zcv), 5, length = 100)
           dvals <- dnorm(x)
@@ -234,17 +239,17 @@ server <- function(input, output)
       ### Step 2
       output$sol2 <- renderUI({
         withMathJax(
-          helpText(paste0("\\(\\textbf{Stap 2: Bepaal het steekproefgemiddelde
-        $\\bar{X}_{cv}$ dat bij $Z_{cv}$ hoort onder $H_0$}\\)")),
-          helpText(paste0("Standaardfout van het gemiddelde is: $$\\sigma_\\bar{X} =
+          helpText(paste0("\\(\\textbf{Step 2: Determine the sample mean 
+        $\\bar{X}_{cv}$ that belongs with $Z_{cv}$ for the given $H_0$}\\)")),
+          helpText(paste0("Standard error of the mean is: $$\\sigma_\\bar{X} =
         \\frac{\\sigma}{\\sqrt{N}} = \\frac{", sigma, "}{\\sqrt{", N, "}} = ",
                           round(sigma/sqrt(N), 3), "$$")),
-          helpText(paste0("Bepaal \\(\\textit{$\\bar{X}_{cv}$}\\): $$\\bar{X}_{cv} =
+          helpText(paste0("Determine \\(\\textit{$\\bar{X}_{cv}$}\\): $$\\bar{X}_{cv} =
         \\mu_{H_0} + Z_{cv} \\times \\sigma_\\bar{X} = ", mu_h0, " + ", zcv, "\\times",
                           round(sigma/sqrt(N), 3), " = ", round(xcv, 3), "$$")),
-          helpText("Hieronder wordt dit weergegeven in een figuur o.b.v. de 
-                 ongestandaardiseerde scores waarbij het oranje gebied het
-                 verwerpingsgebied is.")
+          helpText("This is illustrated in the figure below, which is based on 
+                   the unstandardised scores. The orange area is the area where 
+                   \\(\\textit{$H_0$}\\) gets rejected.")
           
         )
         
@@ -265,7 +270,7 @@ server <- function(input, output)
         plot(x, dnorm(x, mean = mu_h0, sd = sigma/sqrt(N)), type = "l", yaxt = "n",
              bty = "n", ylab = "", cex.axis = 1.5, cex.lab  = 1.5, xlab = "", xaxt = "n")
         
-        if (text_direc == "linkseenzijdige" | two_direc == "linkerstaart")
+        if (text_direc == "left-tailed" | two_direc == "left tail")
         {
           x <- seq(lb, xcv_l, length = 100)
           dvals <- dnorm(x, mean = mu_h0, sd = sigma/sqrt(N))
@@ -273,7 +278,7 @@ server <- function(input, output)
           
           mtext(expression(italic(bar(X))[cv]), side = 1, at = xcv_l, line = 1, 
                 cex = 1.5)
-        } else if (text_direc == "rechtseenzijdige" | two_direc == "rechterstaart")
+        } else if (text_direc == "right-tailed" | two_direc == "right tail")
         {
           x <- seq(xcv_r, ub, length = 100)
           dvals <- dnorm(x, mean = mu_h0, sd = sigma/sqrt(N))
@@ -292,14 +297,15 @@ server <- function(input, output)
       ### Step 3
       output$sol3 <- renderUI({
         withMathJax(
-          helpText(paste0("\\(\\textbf{Stap 3: Reken de kritieke grenswaarde 
-                        $\\bar{X}_{cv}$ om naar de $Z_{H_1}$-waarde onder de $H_1$}\\)")),
+          helpText(paste0("\\(\\textbf{Step 3: Convert the critical value $\\bar{X}_{cv}$ 
+                          to the $Z_{H_1}$-value for the given $H_1$}\\)")),
           helpText(paste0("$$Z_{H_1} = \\frac{\\bar{X}_{cv}-\\mu_{H_1}}{\\sigma_\\bar{X}} 
                         = \\frac{", round(xcv, 3), "-", mu_h1, "}{", 
                           round(sigma/sqrt(N), 3), "} = 
                         ", zh1, "$$")),
-          helpText("Hieronder wordt dit weergegeven in een figuur o.b.v. 
-        \\(\\textit{Z}\\)-scores waarbij het oranje gebied het verwerpingsgebied is.")
+          helpText("This is illustrated in the figure below, which is based on 
+                   \\(\\textit{Z}\\)-scores. The orange area is the area where 
+                   \\(\\textit{$H_0$}\\) gets rejected.")
         )
       })
       
@@ -312,12 +318,12 @@ server <- function(input, output)
         plot(x, dnorm(x), type = "l", yaxt = "n", bty = "n", ylab = "",
              cex.axis = 1.5, cex.lab  = 1.5, xlab = "", xaxt = "n")
         
-        if (text_direc == "linkseenzijdige" | two_direc == "linkerstaart")
+        if (text_direc == "left-tailed" | two_direc == "left tail")
         {
           x <- seq(-5, zh1, length = 100)
           dvals <- dnorm(x)
           polygon(c(x, rev(x)), c(rep(0, 100), rev(dvals)), col = "orange")
-        } else if (text_direc == "rechtseenzijdige" | two_direc == "rechterstaart")
+        } else if (text_direc == "right-tailed" | two_direc == "right tail")
         {
           x <- seq(zh1, 5, length = 100)
           dvals <- dnorm(x)
@@ -335,11 +341,10 @@ server <- function(input, output)
       ### Step 4
       output$sol4 <- renderUI({
         withMathJax(
-          helpText(paste0("\\(\\textbf{Stap 4: Bepaal het onderscheidend vermogen/power}\\)")),
-          helpText(paste0("Het onderscheidend vermogen/power is gelijk aan de 
-                        oppervlakte van het oranje gebied in de verdeling in stap 3.
-                        Dat is ", nota4, " en kan gevonden worden met behulp van 
-                        Tabel C.1.")),
+          helpText(paste0("\\(\\textbf{Step 4: Determine the power}\\)")),
+          helpText(paste0("The power is equal to the orange area of the 
+                          distribution in step 3. That is ", nota4, " and can be
+                          found using Table B.1.")),
           helpText(paste0("$$", nota4_eq, " = ", power, "$$."))
         )
       })
