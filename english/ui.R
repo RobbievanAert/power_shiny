@@ -34,9 +34,9 @@ ui <- fluidPage(
     tags$br(),
     tags$br(),
     
-    helpText("A researcher is planning to carry out a \\(\\textit{Z}\\)-test and 
+    withMathJax(helpText("A researcher is planning to carry out a \\(\\textit{Z}\\)-test and 
              wants to know the power of this hypothesis test. The following 
-             information is known:"),
+             information is known:")),
     
     uiOutput("ex"), # List of conditions
     

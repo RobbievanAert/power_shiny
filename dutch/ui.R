@@ -34,9 +34,9 @@ ui <- fluidPage(
     tags$br(),
     tags$br(),
     
-    helpText("Een onderzoeker is van plan een \\(\\textit{Z}\\)-toets uit 
+    withMathJax(helpText("Een onderzoeker is van plan een \\(\\textit{Z}\\)-toets uit 
       te voeren en wil weten wat het onderscheidend vermogen/power is van deze 
-      hypothesetoets. Onderstaande gegevens zijn bekend:"),
+      hypothesetoets. Onderstaande gegevens zijn bekend:")),
     
     uiOutput("ex"), # List of conditions
     
