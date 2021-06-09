@@ -168,7 +168,7 @@ server <- function(input, output, session)
                         gegeven $\\alpha$ en richting van de toets)}\\)")),
           helpText(paste0("Er is een ", text_direc, " toets uitgevoerd met
                         \\(\\alpha\\) = ", alpha, ", dus \\(\\textit{$Z_{cv}$}\\)
-                         = ", zcv, ". Deze \\(\\textit{$Z_{cv}$}\\)
+                         = ", format(zcv, nsmall = 3), ". Deze \\(\\textit{$Z_{cv}$}\\)
                         kunnen we vinden in Tabel B.2 als we kijken bij het
                         \\(\\textit{$\\infty$}\\)-teken in combinatie met '", tail,
                         "' en \\(\\alpha\\) = ", alpha, ". Hieronder wordt dit
@@ -185,7 +185,7 @@ server <- function(input, output, session)
                         gegeven $\\alpha$ en richting van de toets)}\\)")),
           helpText(paste0("Er is een ", text_direc, " toets uitgevoerd met
                         \\(\\alpha\\) = ", alpha, ", dus \\(\\textit{$Z_{cv}$}\\)
-                         = ", zcv, ". Deze \\(\\textit{$Z_{cv}$}\\)
+                         = ", format(zcv, nsmall = 3), ". Deze \\(\\textit{$Z_{cv}$}\\)
                         kunnen we vinden in Tabel B.2 als we kijken bij het
                         \\(\\textit{$\\infty$}\\)-teken in combinatie met '", tail,
                         "' en \\(\\alpha\\) = ", alpha, ". Hieronder wordt dit
@@ -236,10 +236,11 @@ server <- function(input, output, session)
         $\\bar{X}_{cv}$ dat bij $Z_{cv}$ hoort onder $H_0$}\\)")),
         helpText(paste0("Standaardfout van het gemiddelde is: $$\\sigma_\\bar{X} =
         \\frac{\\sigma}{\\sqrt{N}} = \\frac{", sigma, "}{\\sqrt{", N, "}} = ",
-        round(sigma/sqrt(N), 3), "$$")),
+        format(round(sigma/sqrt(N), 3), nsmall = 3), "$$")),
         helpText(paste0("Bepaal \\(\\textit{$\\bar{X}_{cv}$}\\): $$\\bar{X}_{cv} =
-        \\mu_{H_0} + Z_{cv} \\times \\sigma_\\bar{X} = ", mu_h0, " + ", zcv, "\\times",
-        round(sigma/sqrt(N), 3), " = ", round(xcv, 3), "$$")),
+        \\mu_{H_0} + Z_{cv} \\times \\sigma_\\bar{X} = ", mu_h0, " + ", 
+        format(zcv, nsmall =3), "\\times", format(round(sigma/sqrt(N), 3), nsmall = 3), 
+        " = ", format(round(xcv, 3), nsmall = 3), "$$")),
         helpText("Hieronder wordt dit weergegeven in een figuur o.b.v. de 
                  ongestandaardiseerde scores waarbij het oranje gebied het
                  verwerpingsgebied is.")
@@ -293,9 +294,9 @@ server <- function(input, output, session)
         helpText(paste0("\\(\\textbf{Stap 3: Reken de kritieke grenswaarde 
                         $\\bar{X}_{cv}$ om naar de $Z_{H_1}$-waarde onder de $H_1$}\\)")),
         helpText(paste0("$$Z_{H_1} = \\frac{\\bar{X}_{cv}-\\mu_{H_1}}{\\sigma_\\bar{X}} 
-                        = \\frac{", round(xcv, 3), "-", mu_h1, "}{", 
-                        round(sigma/sqrt(N), 3), "} = 
-                        ", zh1, "$$")),
+                        = \\frac{", format(round(xcv, 3), nsmall = 3), "-", 
+                        mu_h1, "}{", format(round(sigma/sqrt(N), 3), nsmall = 3), "} = 
+                        ", format(zh1, nsmall = 3), "$$")),
         helpText("Hieronder wordt dit weergegeven in een figuur o.b.v. 
         \\(\\textit{Z}\\)-scores waarbij het oranje gebied het verwerpingsgebied is.")
       )
@@ -325,7 +326,7 @@ server <- function(input, output, session)
       abline(v = 0, lty = 2)
       mtext("0", side = 1, at = 0, line = 1, cex = 1.5)
       
-      mtext(zh1, side = 1, at = zh1, line = 1, cex = 1.5)
+      mtext(expression(italic(Z[H[1]])), side = 1, at = zh1, line = 1, cex = 1.5)
       
     })
     
@@ -338,7 +339,7 @@ server <- function(input, output, session)
                         oppervlakte van het oranje gebied in de verdeling in stap 3.
                         Dat is ", nota4, " en kan gevonden worden met behulp van 
                         Tabel B.1.")),
-        helpText(paste0("$$", nota4_eq, " = ", power, "$$."))
+        helpText(paste0("$$", nota4_eq, " = ", format(power, nsmall = 4), "$$."))
       )
     })
     

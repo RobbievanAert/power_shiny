@@ -169,7 +169,7 @@ server <- function(input, output, session)
                             of the test)}\\)")),
           helpText(paste0("A ", text_direc, " test has been carried out with 
             \\(\\alpha\\) = ", alpha, ", so \\(\\textit{$Z_{cv}$}\\)
-                         = ", zcv, ". We find this \\(\\textit{$Z_{cv}$}\\) in 
+                         = ", format(zcv, nsmall = 3), ". We find this \\(\\textit{$Z_{cv}$}\\) in 
                             Table B.2, if we look at the \\(\\textit{$\\infty$}\\)-sign 
                             in combination with '", tail,
             "' and \\(\\alpha\\) = ", alpha, ". This is illustrated 
@@ -189,7 +189,7 @@ server <- function(input, output, session)
           
           helpText(paste0("A ", text_direc, " test has been carried out with 
                         \\(\\alpha\\) = ", alpha, ", so \\(\\textit{$Z_{cv}$}\\)
-                         = ", zcv, ". We find this \\(\\textit{$Z_{cv}$}\\)
+                         = ", format(zcv, nsmall = 3), ". We find this \\(\\textit{$Z_{cv}$}\\)
                         in Table B.2, if we look at the \\(\\textit{$\\infty$}\\)-sign 
                             in combination with '", tail,
                         "' and \\(\\alpha\\) = ", alpha, ". This is 
@@ -241,10 +241,11 @@ server <- function(input, output, session)
         $\\bar{X}_{cv}$ that belongs with $Z_{cv}$ for the given $H_0$}\\)")),
         helpText(paste0("Standard error of the mean is: $$\\sigma_\\bar{X} =
         \\frac{\\sigma}{\\sqrt{N}} = \\frac{", sigma, "}{\\sqrt{", N, "}} = ",
-        round(sigma/sqrt(N), 3), "$$")),
+        format(round(sigma/sqrt(N), 3), nsmall = 3), "$$")),
         helpText(paste0("Determine \\(\\textit{$\\bar{X}_{cv}$}\\): $$\\bar{X}_{cv} =
-        \\mu_{H_0} + Z_{cv} \\times \\sigma_\\bar{X} = ", mu_h0, " + ", zcv, "\\times",
-        round(sigma/sqrt(N), 3), " = ", round(xcv, 3), "$$")),
+        \\mu_{H_0} + Z_{cv} \\times \\sigma_\\bar{X} = ", mu_h0, " + ", 
+        format(zcv, nsmall = 3), "\\times", format(round(sigma/sqrt(N), 3), nsmall = 3),
+        " = ", format(round(xcv, 3), nsmall = 3), "$$")),
         helpText("This is illustrated in the figure below, which is based on 
                    the unstandardised scores. The orange area is the area where 
                    \\(\\textit{$H_0$}\\) gets rejected.")
@@ -298,9 +299,9 @@ server <- function(input, output, session)
         helpText(paste0("\\(\\textbf{Step 3: Convert the critical value $\\bar{X}_{cv}$ 
                           to the $Z_{H_1}$-value for the given $H_1$}\\)")),
         helpText(paste0("$$Z_{H_1} = \\frac{\\bar{X}_{cv}-\\mu_{H_1}}{\\sigma_\\bar{X}} 
-                        = \\frac{", round(xcv, 3), "-", mu_h1, "}{", 
-                        round(sigma/sqrt(N), 3), "} = 
-                        ", zh1, "$$")),
+                        = \\frac{", format(round(xcv, 3), nsmall = 3), "-", 
+                        mu_h1, "}{", format(round(sigma/sqrt(N), 3), nsmall = 3), "} = 
+                        ", format(zh1, nsmall = 3), "$$")),
         helpText("This is illustrated in the figure below, which is based on 
                    \\(\\textit{Z}\\)-scores. The orange area is the area where 
                    \\(\\textit{$H_0$}\\) gets rejected.")
@@ -331,7 +332,7 @@ server <- function(input, output, session)
       abline(v = 0, lty = 2)
       mtext("0", side = 1, at = 0, line = 1, cex = 1.5)
       
-      mtext(zh1, side = 1, at = zh1, line = 1, cex = 1.5)
+      mtext(expression(italic(Z[H[1]])), side = 1, at = zh1, line = 1, cex = 1.5)
       
     })
     
@@ -343,7 +344,7 @@ server <- function(input, output, session)
         helpText(paste0("The power is equal to the orange area of the 
                           distribution in step 3. That is ", nota4, " and can be
                           found using Table B.1.")),
-        helpText(paste0("$$", nota4_eq, " = ", power, "$$."))
+        helpText(paste0("$$", nota4_eq, " = ", format(power, nsmall = 4), "$$."))
       )
     })
     
