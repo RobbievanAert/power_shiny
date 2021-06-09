@@ -59,19 +59,23 @@ ui <- fluidPage(
     tags$br(),
     tags$br(),
     
-    uiOutput("sol1"), # Solution step 1
-    
-    plotOutput("plot1", width = "70%", height = "220px"), # Plot step 1
-    
-    uiOutput("sol2"), # Solution step 2
-    
-    plotOutput("plot2", width = "70%", height = "220px"), # Plot step 2
-    
-    uiOutput("sol3"), # Solution step 3
-    
-    plotOutput("plot3", width = "70%", height = "220px"), # Plot step 3
-    
-    uiOutput("sol4") # Solution step 4
+    ### Conditional panel where solutions are not shown at launch of the application
+    # (input.sol > 0)
+    conditionalPanel("input.sol > 0",
+                     uiOutput("sol1"), # Solution step 1
+                     
+                     plotOutput("plot1", width = "70%", height = "220px"), # Plot step 1
+                     
+                     uiOutput("sol2"), # Solution step 2
+                     
+                     plotOutput("plot2", width = "70%", height = "220px"), # Plot step 2
+                     
+                     uiOutput("sol3"), # Solution step 3
+                     
+                     plotOutput("plot3", width = "70%", height = "220px"), # Plot step 3
+                     
+                     uiOutput("sol4") # Solution step 4
+    ),
     
   )
 )

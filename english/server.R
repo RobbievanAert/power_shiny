@@ -5,7 +5,7 @@
 ##### License: MIT License (Expat)                                    #####
 ###########################################################################
 
-server <- function(input, output) 
+server <- function(input, output, session) 
 {
   
   ### Function to generate data
@@ -158,214 +158,205 @@ server <- function(input, output)
   get_sol <- function()
   {
     
-    observeEvent(input$sol, {
-      
-      ### Step 1: Extra information about the direction of the test is added for 
-      # two-tailed tests
-      if (direc != "\\neq")
-      {
-        output$sol1 <- renderUI({
-          withMathJax(
-            helpText(paste0("\\(\\textbf{Step 1: Determine the $Z_{cv}$ for the 
+    ### Step 1: Extra information about the direction of the test is added for 
+    # two-tailed tests
+    if (direc != "\\neq")
+    {
+      output$sol1 <- renderUI({
+        withMathJax(
+          helpText(paste0("\\(\\textbf{Step 1: Determine the $Z_{cv}$ for the 
                             given $H_0$ (and the assumed $\\alpha$ and direction 
                             of the test)}\\)")),
-            helpText(paste0("A ", text_direc, " test has been carried out with 
+          helpText(paste0("A ", text_direc, " test has been carried out with 
             \\(\\alpha\\) = ", alpha, ", so \\(\\textit{$Z_{cv}$}\\)
                          = ", zcv, ". We find this \\(\\textit{$Z_{cv}$}\\) in 
                             Table B.2, if we look at the \\(\\textit{$\\infty$}\\)-sign 
                             in combination with '", tail,
-                            "' and \\(\\alpha\\) = ", alpha, ". This is illustrated 
+            "' and \\(\\alpha\\) = ", alpha, ". This is illustrated 
                             in the figure below that displays \\(\\textit{Z}\\)-scores 
                             where the orange area is the area where \\(\\textit{$H_0$}\\) 
                             gets rejected.")))
-          
-        })
         
-      } else if (direc == "\\neq")
-      {
-        output$sol1 <- renderUI({
-          withMathJax(
-            helpText(paste0("\\(\\textbf{Step 1: Determine the $Z_{cv}$ for the 
+      })
+      
+    } else if (direc == "\\neq")
+    {
+      output$sol1 <- renderUI({
+        withMathJax(
+          helpText(paste0("\\(\\textbf{Step 1: Determine the $Z_{cv}$ for the 
                             given $H_0$ (and the assumed $\\alpha$ and direction 
                             of the test)}\\)")),
-            
-            helpText(paste0("A ", text_direc, " test has been carried out with 
+          
+          helpText(paste0("A ", text_direc, " test has been carried out with 
                         \\(\\alpha\\) = ", alpha, ", so \\(\\textit{$Z_{cv}$}\\)
                          = ", zcv, ". We find this \\(\\textit{$Z_{cv}$}\\)
                         in Table B.2, if we look at the \\(\\textit{$\\infty$}\\)-sign 
                             in combination with '", tail,
-                            "' and \\(\\alpha\\) = ", alpha, ". This is 
+                        "' and \\(\\alpha\\) = ", alpha, ". This is 
                             illustrated in the figure below that displays 
                             \\(\\textit{Z}\\)-scores where the orange area is 
                             the area where \\(\\textit{$H_0$}\\) gets rejected. 
                             This rejection area lies in the ", two_direc, " of 
                             the distribution, because this is the expected 
                             direction according to the \\(\\textit{$\\mu_{H_1}$}\\).")))
-          
-        })
+        
+      })
+    }
+    
+    ### Generate plot step 1
+    output$plot1 <- renderPlot({
+      par(mar = c(5, 5, 2, 2), xaxs = "i", yaxs = "i")
+      
+      x <- seq(from = -3, to = 3, length.out = 100)
+      plot(x, dnorm(x), type = "l", yaxt = "n", bty = "n", ylab = "",
+           cex.axis = 1.5, cex.lab  = 1.5, xlab = "", xaxt = "n")
+      
+      if (text_direc == "left-tailed" | two_direc == "left tail")
+      {
+        x <- seq(-5, -abs(zcv), length = 100)
+        dvals <- dnorm(x)
+        polygon(c(x, rev(x)), c(rep(0, 100), rev(dvals)), col = "orange")
+        
+        mtext(expression(italic(Z)[cv]), side = 1, at = -abs(zcv),
+              line = 1, cex = 1.5)
+      } else if (text_direc == "right-tailed" | two_direc == "right tail")
+      {
+        x <- seq(abs(zcv), 5, length = 100)
+        dvals <- dnorm(x)
+        polygon(c(x, rev(x)), c(rep(0,100), rev(dvals)), col = "orange")
+        
+        mtext(expression(italic(Z)[cv]), side = 1, at = abs(zcv), line = 1, cex = 1.5)
       }
       
-      ### Generate plot step 1
-      output$plot1 <- renderPlot({
-        par(mar = c(5, 5, 2, 2), xaxs = "i", yaxs = "i")
-        
-        x <- seq(from = -3, to = 3, length.out = 100)
-        plot(x, dnorm(x), type = "l", yaxt = "n", bty = "n", ylab = "",
-             cex.axis = 1.5, cex.lab  = 1.5, xlab = "", xaxt = "n")
-        
-        if (text_direc == "left-tailed" | two_direc == "left tail")
-        {
-          x <- seq(-5, -abs(zcv), length = 100)
-          dvals <- dnorm(x)
-          polygon(c(x, rev(x)), c(rep(0, 100), rev(dvals)), col = "orange")
-          
-          mtext(expression(italic(Z)[cv]), side = 1, at = -abs(zcv),
-                line = 1, cex = 1.5)
-        } else if (text_direc == "right-tailed" | two_direc == "right tail")
-        {
-          x <- seq(abs(zcv), 5, length = 100)
-          dvals <- dnorm(x)
-          polygon(c(x, rev(x)), c(rep(0,100), rev(dvals)), col = "orange")
-          
-          mtext(expression(italic(Z)[cv]), side = 1, at = abs(zcv), line = 1, cex = 1.5)
-        }
-        
-        abline(v = 0, lty = 2)
-        mtext("0", side = 1, at = 0, line = 1, cex = 1.5)
-        
-      })
+      abline(v = 0, lty = 2)
+      mtext("0", side = 1, at = 0, line = 1, cex = 1.5)
       
-      
-      ### Step 2
-      output$sol2 <- renderUI({
-        withMathJax(
-          helpText(paste0("\\(\\textbf{Step 2: Determine the sample mean 
+    })
+    
+    
+    ### Step 2
+    output$sol2 <- renderUI({
+      withMathJax(
+        helpText(paste0("\\(\\textbf{Step 2: Determine the sample mean 
         $\\bar{X}_{cv}$ that belongs with $Z_{cv}$ for the given $H_0$}\\)")),
-          helpText(paste0("Standard error of the mean is: $$\\sigma_\\bar{X} =
+        helpText(paste0("Standard error of the mean is: $$\\sigma_\\bar{X} =
         \\frac{\\sigma}{\\sqrt{N}} = \\frac{", sigma, "}{\\sqrt{", N, "}} = ",
-                          round(sigma/sqrt(N), 3), "$$")),
-          helpText(paste0("Determine \\(\\textit{$\\bar{X}_{cv}$}\\): $$\\bar{X}_{cv} =
+        round(sigma/sqrt(N), 3), "$$")),
+        helpText(paste0("Determine \\(\\textit{$\\bar{X}_{cv}$}\\): $$\\bar{X}_{cv} =
         \\mu_{H_0} + Z_{cv} \\times \\sigma_\\bar{X} = ", mu_h0, " + ", zcv, "\\times",
-                          round(sigma/sqrt(N), 3), " = ", round(xcv, 3), "$$")),
-          helpText("This is illustrated in the figure below, which is based on 
+        round(sigma/sqrt(N), 3), " = ", round(xcv, 3), "$$")),
+        helpText("This is illustrated in the figure below, which is based on 
                    the unstandardised scores. The orange area is the area where 
                    \\(\\textit{$H_0$}\\) gets rejected.")
-          
-        )
         
-      })
+      )
       
+    })
+    
+    
+    ### Generate plot step 2
+    output$plot2 <- renderPlot({
+      par(mar = c(5, 5, 2, 2), xaxs = "i", yaxs = "i")
       
-      ### Generate plot step 2
-      output$plot2 <- renderPlot({
-        par(mar = c(5, 5, 2, 2), xaxs = "i", yaxs = "i")
-        
-        xcv_l <- mu_h0 - abs(zcv) * sigma/sqrt(N)
-        xcv_r <- mu_h0 + abs(zcv) * sigma/sqrt(N)
-        
-        lb <- mu_h0 - 5 * sigma/sqrt(N)
-        ub <- mu_h0 + 5 * sigma/sqrt(N)
-        
-        x <- seq(from = mu_h0-3*sigma/sqrt(N), to = mu_h0+3*sigma/sqrt(N), length.out = 100)
-        plot(x, dnorm(x, mean = mu_h0, sd = sigma/sqrt(N)), type = "l", yaxt = "n",
-             bty = "n", ylab = "", cex.axis = 1.5, cex.lab  = 1.5, xlab = "", xaxt = "n")
-        
-        if (text_direc == "left-tailed" | two_direc == "left tail")
-        {
-          x <- seq(lb, xcv_l, length = 100)
-          dvals <- dnorm(x, mean = mu_h0, sd = sigma/sqrt(N))
-          polygon(c(x, rev(x)), c(rep(0, 100), rev(dvals)), col = "orange")
-          
-          mtext(expression(italic(bar(X))[cv]), side = 1, at = xcv_l, line = 1, 
-                cex = 1.5)
-        } else if (text_direc == "right-tailed" | two_direc == "right tail")
-        {
-          x <- seq(xcv_r, ub, length = 100)
-          dvals <- dnorm(x, mean = mu_h0, sd = sigma/sqrt(N))
-          polygon(c(x, rev(x)), c(rep(0,100), rev(dvals)) ,col = "orange")
-          
-          mtext(expression(italic(bar(X))[cv]), side = 1, at = xcv_r, line = 1,
-                cex = 1.5)
-        }
-        
-        abline(v = mu_h0, lty = 2)
-        mtext(mu_h0, side = 1, at = mu_h0, line = 1, cex = 1.5)
-        
-      })
+      xcv_l <- mu_h0 - abs(zcv) * sigma/sqrt(N)
+      xcv_r <- mu_h0 + abs(zcv) * sigma/sqrt(N)
       
+      lb <- mu_h0 - 5 * sigma/sqrt(N)
+      ub <- mu_h0 + 5 * sigma/sqrt(N)
       
-      ### Step 3
-      output$sol3 <- renderUI({
-        withMathJax(
-          helpText(paste0("\\(\\textbf{Step 3: Convert the critical value $\\bar{X}_{cv}$ 
+      x <- seq(from = mu_h0-3*sigma/sqrt(N), to = mu_h0+3*sigma/sqrt(N), length.out = 100)
+      plot(x, dnorm(x, mean = mu_h0, sd = sigma/sqrt(N)), type = "l", yaxt = "n",
+           bty = "n", ylab = "", cex.axis = 1.5, cex.lab  = 1.5, xlab = "", xaxt = "n")
+      
+      if (text_direc == "left-tailed" | two_direc == "left tail")
+      {
+        x <- seq(lb, xcv_l, length = 100)
+        dvals <- dnorm(x, mean = mu_h0, sd = sigma/sqrt(N))
+        polygon(c(x, rev(x)), c(rep(0, 100), rev(dvals)), col = "orange")
+        
+        mtext(expression(italic(bar(X))[cv]), side = 1, at = xcv_l, line = 1, 
+              cex = 1.5)
+      } else if (text_direc == "right-tailed" | two_direc == "right tail")
+      {
+        x <- seq(xcv_r, ub, length = 100)
+        dvals <- dnorm(x, mean = mu_h0, sd = sigma/sqrt(N))
+        polygon(c(x, rev(x)), c(rep(0,100), rev(dvals)) ,col = "orange")
+        
+        mtext(expression(italic(bar(X))[cv]), side = 1, at = xcv_r, line = 1,
+              cex = 1.5)
+      }
+      
+      abline(v = mu_h0, lty = 2)
+      mtext(mu_h0, side = 1, at = mu_h0, line = 1, cex = 1.5)
+      
+    })
+    
+    
+    ### Step 3
+    output$sol3 <- renderUI({
+      withMathJax(
+        helpText(paste0("\\(\\textbf{Step 3: Convert the critical value $\\bar{X}_{cv}$ 
                           to the $Z_{H_1}$-value for the given $H_1$}\\)")),
-          helpText(paste0("$$Z_{H_1} = \\frac{\\bar{X}_{cv}-\\mu_{H_1}}{\\sigma_\\bar{X}} 
+        helpText(paste0("$$Z_{H_1} = \\frac{\\bar{X}_{cv}-\\mu_{H_1}}{\\sigma_\\bar{X}} 
                         = \\frac{", round(xcv, 3), "-", mu_h1, "}{", 
-                          round(sigma/sqrt(N), 3), "} = 
+                        round(sigma/sqrt(N), 3), "} = 
                         ", zh1, "$$")),
-          helpText("This is illustrated in the figure below, which is based on 
+        helpText("This is illustrated in the figure below, which is based on 
                    \\(\\textit{Z}\\)-scores. The orange area is the area where 
                    \\(\\textit{$H_0$}\\) gets rejected.")
-        )
-      })
+      )
+    })
+    
+    
+    ### Generate plot step 3
+    output$plot3 <- renderPlot({
+      par(mar = c(5, 5, 2, 2), xaxs = "i", yaxs = "i")
       
+      x <- seq(from = -4, to = 4, length.out = 100)
+      plot(x, dnorm(x), type = "l", yaxt = "n", bty = "n", ylab = "",
+           cex.axis = 1.5, cex.lab  = 1.5, xlab = "", xaxt = "n")
       
-      ### Generate plot step 3
-      output$plot3 <- renderPlot({
-        par(mar = c(5, 5, 2, 2), xaxs = "i", yaxs = "i")
-        
-        x <- seq(from = -4, to = 4, length.out = 100)
-        plot(x, dnorm(x), type = "l", yaxt = "n", bty = "n", ylab = "",
-             cex.axis = 1.5, cex.lab  = 1.5, xlab = "", xaxt = "n")
-        
-        if (text_direc == "left-tailed" | two_direc == "left tail")
-        {
-          x <- seq(-5, zh1, length = 100)
-          dvals <- dnorm(x)
-          polygon(c(x, rev(x)), c(rep(0, 100), rev(dvals)), col = "orange")
-        } else if (text_direc == "right-tailed" | two_direc == "right tail")
-        {
-          x <- seq(zh1, 5, length = 100)
-          dvals <- dnorm(x)
-          polygon(c(x, rev(x)), c(rep(0,100), rev(dvals)) ,col = "orange")
-        }
-        
-        abline(v = 0, lty = 2)
-        mtext("0", side = 1, at = 0, line = 1, cex = 1.5)
-        
-        mtext(zh1, side = 1, at = zh1, line = 1, cex = 1.5)
-        
-      })
+      if (text_direc == "left-tailed" | two_direc == "left tail")
+      {
+        x <- seq(-5, zh1, length = 100)
+        dvals <- dnorm(x)
+        polygon(c(x, rev(x)), c(rep(0, 100), rev(dvals)), col = "orange")
+      } else if (text_direc == "right-tailed" | two_direc == "right tail")
+      {
+        x <- seq(zh1, 5, length = 100)
+        dvals <- dnorm(x)
+        polygon(c(x, rev(x)), c(rep(0,100), rev(dvals)) ,col = "orange")
+      }
       
+      abline(v = 0, lty = 2)
+      mtext("0", side = 1, at = 0, line = 1, cex = 1.5)
       
-      ### Step 4
-      output$sol4 <- renderUI({
-        withMathJax(
-          helpText(paste0("\\(\\textbf{Step 4: Determine the power}\\)")),
-          helpText(paste0("The power is equal to the orange area of the 
+      mtext(zh1, side = 1, at = zh1, line = 1, cex = 1.5)
+      
+    })
+    
+    
+    ### Step 4
+    output$sol4 <- renderUI({
+      withMathJax(
+        helpText(paste0("\\(\\textbf{Step 4: Determine the power}\\)")),
+        helpText(paste0("The power is equal to the orange area of the 
                           distribution in step 3. That is ", nota4, " and can be
                           found using Table B.1.")),
-          helpText(paste0("$$", nota4_eq, " = ", power, "$$."))
-        )
-      })
-      
+        helpText(paste0("$$", nota4_eq, " = ", power, "$$."))
+      )
     })
     
   }
   
-  ### Generate new data and attach these objects to global environment
+  ### Generate new data and attach these objects to global environment and 
+  # generate solution
   attach(gen_dat(), warn.conflicts = FALSE)
-  
-  ### Get the solution to the exercise
   get_sol()
   
-  ### Generate new data if the button "new" is clicked
+  ### Generate new data and get solution if the button "new" is clicked
   observeEvent(input$new, {
-    attach(gen_dat(), warn.conflicts = FALSE)
-    
-    ### Omit the solution to the previous exercise
-    output$sol1 <- output$sol2 <- output$sol3 <- output$sol4 <- NULL
-    output$plot1 <- output$plot2 <- output$plot3 <- NULL
+    session$reload()
   })
   
 }

@@ -5,7 +5,7 @@
 ##### License: MIT License (Expat)                                    #####
 ###########################################################################
 
-server <- function(input, output) 
+server <- function(input, output, session) 
 {
   
   ### Function to generate data
@@ -158,209 +158,200 @@ server <- function(input, output)
   get_sol <- function()
   {
     
-    observeEvent(input$sol, {
-      
-      ### Step 1: Extra information about the direction of the test is added for 
-      # two-tailed tests
-      if (direc != "\\neq")
-      {
-        output$sol1 <- renderUI({
-          withMathJax(
-            helpText(paste0("\\(\\textbf{Stap 1: Bepaal de $Z_{cv}$ onder $H_0$ (bij
+    ### Step 1: Extra information about the direction of the test is added for 
+    # two-tailed tests
+    if (direc != "\\neq")
+    {
+      output$sol1 <- renderUI({
+        withMathJax(
+          helpText(paste0("\\(\\textbf{Stap 1: Bepaal de $Z_{cv}$ onder $H_0$ (bij
                         gegeven $\\alpha$ en richting van de toets)}\\)")),
-            helpText(paste0("Er is een ", text_direc, " toets uitgevoerd met
+          helpText(paste0("Er is een ", text_direc, " toets uitgevoerd met
                         \\(\\alpha\\) = ", alpha, ", dus \\(\\textit{$Z_{cv}$}\\)
                          = ", zcv, ". Deze \\(\\textit{$Z_{cv}$}\\)
                         kunnen we vinden in Tabel B.2 als we kijken bij het
                         \\(\\textit{$\\infty$}\\)-teken in combinatie met '", tail,
-                            "' en \\(\\alpha\\) = ", alpha, ". Hieronder wordt dit
+                        "' en \\(\\alpha\\) = ", alpha, ". Hieronder wordt dit
                         weergegeven in een figuur o.b.v. \\(\\textit{Z}\\)-scores 
                         waarbij het oranje gebied het verwerpingsgebied is.")))
-          
-        })
         
-      } else if (direc == "\\neq")
-      {
-        output$sol1 <- renderUI({
-          withMathJax(
-            helpText(paste0("\\(\\textbf{Stap 1: Bepaal de $Z_{cv}$ onder $H_0$ (bij
+      })
+      
+    } else if (direc == "\\neq")
+    {
+      output$sol1 <- renderUI({
+        withMathJax(
+          helpText(paste0("\\(\\textbf{Stap 1: Bepaal de $Z_{cv}$ onder $H_0$ (bij
                         gegeven $\\alpha$ en richting van de toets)}\\)")),
-            helpText(paste0("Er is een ", text_direc, " toets uitgevoerd met
+          helpText(paste0("Er is een ", text_direc, " toets uitgevoerd met
                         \\(\\alpha\\) = ", alpha, ", dus \\(\\textit{$Z_{cv}$}\\)
                          = ", zcv, ". Deze \\(\\textit{$Z_{cv}$}\\)
                         kunnen we vinden in Tabel B.2 als we kijken bij het
                         \\(\\textit{$\\infty$}\\)-teken in combinatie met '", tail,
-                            "' en \\(\\alpha\\) = ", alpha, ". Hieronder wordt dit
+                        "' en \\(\\alpha\\) = ", alpha, ". Hieronder wordt dit
                         weergegeven in een figuur o.b.v. \\(\\textit{Z}\\)-scores 
                         waarbij het oranje gebied het verwerpingsgebied is. Dit 
                             verwerpingsgebied ligt in de ", two_direc, " van de 
                             verdeling, want dit is de juiste richting volgens de 
                             \\(\\textit{$\\mu_{H_1}$}\\).")))
-          
-        })
+        
+      })
+    }
+    
+    ### Generate plot step 1
+    output$plot1 <- renderPlot({
+      par(mar = c(5, 5, 2, 2), xaxs = "i", yaxs = "i")
+      
+      x <- seq(from = -3, to = 3, length.out = 100)
+      plot(x, dnorm(x), type = "l", yaxt = "n", bty = "n", ylab = "",
+           cex.axis = 1.5, cex.lab  = 1.5, xlab = "", xaxt = "n")
+      
+      if (text_direc == "linkseenzijdige" | two_direc == "linkerstaart")
+      {
+        x <- seq(-5, -abs(zcv), length = 100)
+        dvals <- dnorm(x)
+        polygon(c(x, rev(x)), c(rep(0, 100), rev(dvals)), col = "orange")
+        
+        mtext(expression(italic(Z)[cv]), side = 1, at = -abs(zcv),
+              line = 1, cex = 1.5)
+      } else if (text_direc == "rechtseenzijdige" | two_direc == "rechterstaart")
+      {
+        x <- seq(abs(zcv), 5, length = 100)
+        dvals <- dnorm(x)
+        polygon(c(x, rev(x)), c(rep(0,100), rev(dvals)), col = "orange")
+        
+        mtext(expression(italic(Z)[cv]), side = 1, at = abs(zcv), line = 1, cex = 1.5)
       }
       
-      ### Generate plot step 1
-      output$plot1 <- renderPlot({
-        par(mar = c(5, 5, 2, 2), xaxs = "i", yaxs = "i")
-        
-        x <- seq(from = -3, to = 3, length.out = 100)
-        plot(x, dnorm(x), type = "l", yaxt = "n", bty = "n", ylab = "",
-             cex.axis = 1.5, cex.lab  = 1.5, xlab = "", xaxt = "n")
-        
-        if (text_direc == "linkseenzijdige" | two_direc == "linkerstaart")
-        {
-          x <- seq(-5, -abs(zcv), length = 100)
-          dvals <- dnorm(x)
-          polygon(c(x, rev(x)), c(rep(0, 100), rev(dvals)), col = "orange")
-          
-          mtext(expression(italic(Z)[cv]), side = 1, at = -abs(zcv),
-                line = 1, cex = 1.5)
-        } else if (text_direc == "rechtseenzijdige" | two_direc == "rechterstaart")
-        {
-          x <- seq(abs(zcv), 5, length = 100)
-          dvals <- dnorm(x)
-          polygon(c(x, rev(x)), c(rep(0,100), rev(dvals)), col = "orange")
-          
-          mtext(expression(italic(Z)[cv]), side = 1, at = abs(zcv), line = 1, cex = 1.5)
-        }
-        
-        abline(v = 0, lty = 2)
-        mtext("0", side = 1, at = 0, line = 1, cex = 1.5)
-        
-      })
+      abline(v = 0, lty = 2)
+      mtext("0", side = 1, at = 0, line = 1, cex = 1.5)
       
-      
-      ### Step 2
-      output$sol2 <- renderUI({
-        withMathJax(
-          helpText(paste0("\\(\\textbf{Stap 2: Bepaal het steekproefgemiddelde
+    })
+    
+    
+    ### Step 2
+    output$sol2 <- renderUI({
+      withMathJax(
+        helpText(paste0("\\(\\textbf{Stap 2: Bepaal het steekproefgemiddelde
         $\\bar{X}_{cv}$ dat bij $Z_{cv}$ hoort onder $H_0$}\\)")),
-          helpText(paste0("Standaardfout van het gemiddelde is: $$\\sigma_\\bar{X} =
+        helpText(paste0("Standaardfout van het gemiddelde is: $$\\sigma_\\bar{X} =
         \\frac{\\sigma}{\\sqrt{N}} = \\frac{", sigma, "}{\\sqrt{", N, "}} = ",
-                          round(sigma/sqrt(N), 3), "$$")),
-          helpText(paste0("Bepaal \\(\\textit{$\\bar{X}_{cv}$}\\): $$\\bar{X}_{cv} =
+        round(sigma/sqrt(N), 3), "$$")),
+        helpText(paste0("Bepaal \\(\\textit{$\\bar{X}_{cv}$}\\): $$\\bar{X}_{cv} =
         \\mu_{H_0} + Z_{cv} \\times \\sigma_\\bar{X} = ", mu_h0, " + ", zcv, "\\times",
-                          round(sigma/sqrt(N), 3), " = ", round(xcv, 3), "$$")),
-          helpText("Hieronder wordt dit weergegeven in een figuur o.b.v. de 
+        round(sigma/sqrt(N), 3), " = ", round(xcv, 3), "$$")),
+        helpText("Hieronder wordt dit weergegeven in een figuur o.b.v. de 
                  ongestandaardiseerde scores waarbij het oranje gebied het
                  verwerpingsgebied is.")
-          
-        )
         
-      })
+      )
       
+    })
+    
+    
+    ### Generate plot step 2
+    output$plot2 <- renderPlot({
+      par(mar = c(5, 5, 2, 2), xaxs = "i", yaxs = "i")
       
-      ### Generate plot step 2
-      output$plot2 <- renderPlot({
-        par(mar = c(5, 5, 2, 2), xaxs = "i", yaxs = "i")
-        
-        xcv_l <- mu_h0 - abs(zcv) * sigma/sqrt(N)
-        xcv_r <- mu_h0 + abs(zcv) * sigma/sqrt(N)
-        
-        lb <- mu_h0 - 5 * sigma/sqrt(N)
-        ub <- mu_h0 + 5 * sigma/sqrt(N)
-        
-        x <- seq(from = mu_h0-3*sigma/sqrt(N), to = mu_h0+3*sigma/sqrt(N), length.out = 100)
-        plot(x, dnorm(x, mean = mu_h0, sd = sigma/sqrt(N)), type = "l", yaxt = "n",
-             bty = "n", ylab = "", cex.axis = 1.5, cex.lab  = 1.5, xlab = "", xaxt = "n")
-        
-        if (text_direc == "linkseenzijdige" | two_direc == "linkerstaart")
-        {
-          x <- seq(lb, xcv_l, length = 100)
-          dvals <- dnorm(x, mean = mu_h0, sd = sigma/sqrt(N))
-          polygon(c(x, rev(x)), c(rep(0, 100), rev(dvals)), col = "orange")
-          
-          mtext(expression(italic(bar(X))[cv]), side = 1, at = xcv_l, line = 1, 
-                cex = 1.5)
-        } else if (text_direc == "rechtseenzijdige" | two_direc == "rechterstaart")
-        {
-          x <- seq(xcv_r, ub, length = 100)
-          dvals <- dnorm(x, mean = mu_h0, sd = sigma/sqrt(N))
-          polygon(c(x, rev(x)), c(rep(0,100), rev(dvals)) ,col = "orange")
-          
-          mtext(expression(italic(bar(X))[cv]), side = 1, at = xcv_r, line = 1,
-                cex = 1.5)
-        }
-        
-        abline(v = mu_h0, lty = 2)
-        mtext(mu_h0, side = 1, at = mu_h0, line = 1, cex = 1.5)
-        
-      })
+      xcv_l <- mu_h0 - abs(zcv) * sigma/sqrt(N)
+      xcv_r <- mu_h0 + abs(zcv) * sigma/sqrt(N)
       
+      lb <- mu_h0 - 5 * sigma/sqrt(N)
+      ub <- mu_h0 + 5 * sigma/sqrt(N)
       
-      ### Step 3
-      output$sol3 <- renderUI({
-        withMathJax(
-          helpText(paste0("\\(\\textbf{Stap 3: Reken de kritieke grenswaarde 
+      x <- seq(from = mu_h0-3*sigma/sqrt(N), to = mu_h0+3*sigma/sqrt(N), length.out = 100)
+      plot(x, dnorm(x, mean = mu_h0, sd = sigma/sqrt(N)), type = "l", yaxt = "n",
+           bty = "n", ylab = "", cex.axis = 1.5, cex.lab  = 1.5, xlab = "", xaxt = "n")
+      
+      if (text_direc == "linkseenzijdige" | two_direc == "linkerstaart")
+      {
+        x <- seq(lb, xcv_l, length = 100)
+        dvals <- dnorm(x, mean = mu_h0, sd = sigma/sqrt(N))
+        polygon(c(x, rev(x)), c(rep(0, 100), rev(dvals)), col = "orange")
+        
+        mtext(expression(italic(bar(X))[cv]), side = 1, at = xcv_l, line = 1, 
+              cex = 1.5)
+      } else if (text_direc == "rechtseenzijdige" | two_direc == "rechterstaart")
+      {
+        x <- seq(xcv_r, ub, length = 100)
+        dvals <- dnorm(x, mean = mu_h0, sd = sigma/sqrt(N))
+        polygon(c(x, rev(x)), c(rep(0,100), rev(dvals)) ,col = "orange")
+        
+        mtext(expression(italic(bar(X))[cv]), side = 1, at = xcv_r, line = 1,
+              cex = 1.5)
+      }
+      
+      abline(v = mu_h0, lty = 2)
+      mtext(mu_h0, side = 1, at = mu_h0, line = 1, cex = 1.5)
+      
+    })
+    
+    
+    ### Step 3
+    output$sol3 <- renderUI({
+      withMathJax(
+        helpText(paste0("\\(\\textbf{Stap 3: Reken de kritieke grenswaarde 
                         $\\bar{X}_{cv}$ om naar de $Z_{H_1}$-waarde onder de $H_1$}\\)")),
-          helpText(paste0("$$Z_{H_1} = \\frac{\\bar{X}_{cv}-\\mu_{H_1}}{\\sigma_\\bar{X}} 
+        helpText(paste0("$$Z_{H_1} = \\frac{\\bar{X}_{cv}-\\mu_{H_1}}{\\sigma_\\bar{X}} 
                         = \\frac{", round(xcv, 3), "-", mu_h1, "}{", 
-                          round(sigma/sqrt(N), 3), "} = 
+                        round(sigma/sqrt(N), 3), "} = 
                         ", zh1, "$$")),
-          helpText("Hieronder wordt dit weergegeven in een figuur o.b.v. 
+        helpText("Hieronder wordt dit weergegeven in een figuur o.b.v. 
         \\(\\textit{Z}\\)-scores waarbij het oranje gebied het verwerpingsgebied is.")
-        )
-      })
+      )
+    })
+    
+    
+    ### Generate plot step 3
+    output$plot3 <- renderPlot({
+      par(mar = c(5, 5, 2, 2), xaxs = "i", yaxs = "i")
       
+      x <- seq(from = -4, to = 4, length.out = 100)
+      plot(x, dnorm(x), type = "l", yaxt = "n", bty = "n", ylab = "",
+           cex.axis = 1.5, cex.lab  = 1.5, xlab = "", xaxt = "n")
       
-      ### Generate plot step 3
-      output$plot3 <- renderPlot({
-        par(mar = c(5, 5, 2, 2), xaxs = "i", yaxs = "i")
-        
-        x <- seq(from = -4, to = 4, length.out = 100)
-        plot(x, dnorm(x), type = "l", yaxt = "n", bty = "n", ylab = "",
-             cex.axis = 1.5, cex.lab  = 1.5, xlab = "", xaxt = "n")
-        
-        if (text_direc == "linkseenzijdige" | two_direc == "linkerstaart")
-        {
-          x <- seq(-5, zh1, length = 100)
-          dvals <- dnorm(x)
-          polygon(c(x, rev(x)), c(rep(0, 100), rev(dvals)), col = "orange")
-        } else if (text_direc == "rechtseenzijdige" | two_direc == "rechterstaart")
-        {
-          x <- seq(zh1, 5, length = 100)
-          dvals <- dnorm(x)
-          polygon(c(x, rev(x)), c(rep(0,100), rev(dvals)) ,col = "orange")
-        }
-        
-        abline(v = 0, lty = 2)
-        mtext("0", side = 1, at = 0, line = 1, cex = 1.5)
-        
-        mtext(zh1, side = 1, at = zh1, line = 1, cex = 1.5)
-        
-      })
+      if (text_direc == "linkseenzijdige" | two_direc == "linkerstaart")
+      {
+        x <- seq(-5, zh1, length = 100)
+        dvals <- dnorm(x)
+        polygon(c(x, rev(x)), c(rep(0, 100), rev(dvals)), col = "orange")
+      } else if (text_direc == "rechtseenzijdige" | two_direc == "rechterstaart")
+      {
+        x <- seq(zh1, 5, length = 100)
+        dvals <- dnorm(x)
+        polygon(c(x, rev(x)), c(rep(0,100), rev(dvals)) ,col = "orange")
+      }
       
+      abline(v = 0, lty = 2)
+      mtext("0", side = 1, at = 0, line = 1, cex = 1.5)
       
-      ### Step 4
-      output$sol4 <- renderUI({
-        withMathJax(
-          helpText(paste0("\\(\\textbf{Stap 4: Bepaal het onderscheidend vermogen/power}\\)")),
-          helpText(paste0("Het onderscheidend vermogen/power is gelijk aan de 
+      mtext(zh1, side = 1, at = zh1, line = 1, cex = 1.5)
+      
+    })
+    
+    
+    ### Step 4
+    output$sol4 <- renderUI({
+      withMathJax(
+        helpText(paste0("\\(\\textbf{Stap 4: Bepaal het onderscheidend vermogen/power}\\)")),
+        helpText(paste0("Het onderscheidend vermogen/power is gelijk aan de 
                         oppervlakte van het oranje gebied in de verdeling in stap 3.
                         Dat is ", nota4, " en kan gevonden worden met behulp van 
                         Tabel B.1.")),
-          helpText(paste0("$$", nota4_eq, " = ", power, "$$."))
-        )
-      })
-      
+        helpText(paste0("$$", nota4_eq, " = ", power, "$$."))
+      )
     })
     
   }
   
-  ### Generate new data and attach these objects to global environment
+  ### Generate new data and attach these objects to global environment and 
+  # generate solution
   attach(gen_dat(), warn.conflicts = FALSE)
-  
-  ### Get the solution to the exercise
   get_sol()
   
-  ### Generate new data if the button "new" is clicked
+  ### Reload session if the new button is clicked
   observeEvent(input$new, {
-    attach(gen_dat(), warn.conflicts = FALSE)
-    
-    ### Omit the solution to the previous exercise
-    output$sol1 <- output$sol2 <- output$sol3 <- output$sol4 <- NULL
-    output$plot1 <- output$plot2 <- output$plot3 <- NULL
+    session$reload()
   })
   
 }
